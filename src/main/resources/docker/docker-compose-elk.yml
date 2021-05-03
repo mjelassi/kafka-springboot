@@ -1,0 +1,42 @@
+version: "3"
+services:
+    elasticsearch:
+        image: elasticsearch:7.12.0
+        container_name: elasticsearch
+        environment:
+            - cluster.name=docker-cluster
+            - discovery.type=single-node
+            - http.host=0.0.0.0
+            - transport.host=127.0.0.1
+        cap_add:
+            - IPC_LOCK
+        volumes:
+          - /c/tmp/esdata:/usr/share/elasticsearch/data
+        ports:
+            - 9200:9200
+            - 9300:9300
+    logstash:
+        image: logstash:7.12.0
+        container_name: logstash
+        environment:
+            - xpack.monitoring.elasticsearch.hosts=http://elasticsearch:9200
+            - http.host=0.0.0.0
+            - xpack.monitoring.enabled=false
+            - xpack.monitoring.elasticsearch.username=elastic
+            - xpack.monitoring.elasticsearch.password=changeme
+        volumes:
+            - /c/tmp/logstash/pipeline:/usr/share/logstash/pipeline
+        ports:
+            - 5000:5000
+            - 9600:9600
+        depends_on:
+            - elasticsearch
+    kibana:
+        image: kibana:7.12.0
+        container_name: kibana
+        environment:
+            - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+        ports:
+            - 5601:5601
+        depends_on:
+            - elasticsearch

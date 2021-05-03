@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" strict="true" monitorInterval="30">
+
+	<Properties>
+		<Property name="defaultpattern">%style{%d{ISO8601}}{black} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable</Property>
+	</Properties>
+	<Filter type="ThresholdFilter" level="trace"/>
+
+	<Appenders>
+		<Appender type="Console" name="STDOUT">
+			<Layout type="PatternLayout" pattern="${defaultpattern}"/>
+		</Appender>
+	    <Socket name="socket" host="localhost" port="5000" reconnectionDelayMillis="5000">
+			<Layout type="PatternLayout" pattern="${defaultpattern}" />	
+		</Socket>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="com.sb.kafka" level="info" additivity="false">
+			<AppenderRef ref="STDOUT"/>
+			<AppenderRef ref="socket"/>
+		</Logger>
+		<Root level="warn">
+			<AppenderRef ref="STDOUT"/>
+			<AppenderRef ref="socket"/>
+		</Root>
+	</Loggers>
+
+</Configuration>
